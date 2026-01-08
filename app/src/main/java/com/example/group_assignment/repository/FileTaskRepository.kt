@@ -1,3 +1,4 @@
+// JSON handling for storage
 package com.example.group_assignment.repository
 
 import android.content.Context
