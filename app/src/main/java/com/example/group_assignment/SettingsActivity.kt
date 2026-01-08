@@ -82,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
                     resolver.update(targetUri, contentValues, null, null)
                 }
 
-                Toast.makeText(this, "Success! Saved to Documents/TaskMasterBackups/$fileName", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Success!! Saved to Documents/TaskMasterBackups/$fileName", Toast.LENGTH_LONG).show()
             } ?: run {
                 Toast.makeText(this, "Error: Could not create file", Toast.LENGTH_SHORT).show()
             }
