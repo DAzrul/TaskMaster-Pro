@@ -1,3 +1,4 @@
+// State management logic
 package com.example.group_assignment.viewmodel
 
 import androidx.lifecycle.ViewModel
