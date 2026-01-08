@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/app_background"> <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Settings"
+    android:textSize="22sp"
+    android:textStyle="bold"
+    android:layout_gravity="center_horizontal"
+    android:textColor="@color/text_primary"/> <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="@color/text_secondary"
+    android:alpha="0.3"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Appearance"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/text_primary"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dark Mode"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <Switch
+            android:id="@+id/switchDarkMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data Management"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/text_primary"/>
+
+    <Button
+        android:id="@+id/btnBackup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Backup to Device (Export)"
+        android:backgroundTint="@color/card_background"
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="12dp"/>
+
+</LinearLayout>
