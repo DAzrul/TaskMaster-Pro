@@ -1,3 +1,4 @@
+// ViewHolder binding logic
 package com.example.group_assignment.ui
 
 import android.graphics.Paint
