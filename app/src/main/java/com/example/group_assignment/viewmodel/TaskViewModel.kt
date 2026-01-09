@@ -25,8 +25,8 @@ class TaskViewModel(private val repository: ITaskRepository) : ViewModel() {
             // Bila salah satu berubah, dia akan run logic sort ni balik
             combine(repository.getTasks(), _sortOrder) { tasks, sortOrder ->
                 when (sortOrder) {
-                    SortType.TITLE -> tasks.sortedBy { it.title.lowercase() }
-                    SortType.DATE -> tasks.sortedBy { it.dueDate.lowercase() }
+                    SortType.TITLE -> tasks.sortedBy { it.taskTitle.lowercase() }
+                    SortType.DATE -> tasks.sortedBy { it.taskDueDate.lowercase() }
                 }
             }.collect { sortedList ->
                 _tasks.value = sortedList
@@ -41,7 +41,7 @@ class TaskViewModel(private val repository: ITaskRepository) : ViewModel() {
 
     // Fungsi CRUD biasa
     fun addTask(title: String, date: String) {
-        viewModelScope.launch { repository.addTask(Task(title = title, dueDate = date)) }
+        viewModelScope.launch { repository.addTask(Task(taskTitle = title, taskDueDate = date)) }
     }
 
     fun updateTask(task: Task) {

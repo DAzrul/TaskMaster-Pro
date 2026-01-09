@@ -29,21 +29,21 @@ class TaskAdapter(
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
-        holder.tvTitle.text = task.title
-        holder.tvDate.text = task.dueDate
+        holder.tvTitle.text = task.taskTitle
+        holder.tvDate.text = task.taskDueDate
 
         holder.cbCompleted.setOnCheckedChangeListener(null)
-        holder.cbCompleted.isChecked = task.isCompleted
+        holder.cbCompleted.isChecked = task.isTaskCompleted
 
         // Function Strike-through kalau dah siap
-        if (task.isCompleted) {
+        if (task.isTaskCompleted) {
             holder.tvTitle.paintFlags = holder.tvTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         } else {
             holder.tvTitle.paintFlags = holder.tvTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
 
         holder.cbCompleted.setOnCheckedChangeListener { _, isChecked ->
-            onTaskChecked(task.copy(isCompleted = isChecked))
+            onTaskChecked(task.copy(isTaskCompleted = isChecked))
         }
 
         holder.itemView.setOnLongClickListener {
