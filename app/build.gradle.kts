@@ -46,10 +46,13 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
     // GSON (Untuk Role B - JSON)
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.gson)
+
     // DataStore (Untuk Role A - Settings)
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // ViewModel & LiveData (Architecture)
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
