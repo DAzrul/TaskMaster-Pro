@@ -1,3 +1,4 @@
+// JSON handling for storage
 package com.example.group_assignment.repository
 
 import android.content.Context
@@ -12,59 +13,73 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class FileTaskRepository(private val context: Context) : ITaskRepository {
-    private val gson = Gson()
-    private val fileName = "tasks.json"
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
+    private val jsonParser = Gson()
+    private val dataFileName = "tasks.json"
+    private val taskFlow = MutableStateFlow<List<Task>>(emptyList())
 
     init {
-        loadTasks()
+        initializeData()
     }
 
-    private fun loadTasks() {
-        val file = File(context.filesDir, fileName)
-        if (file.exists()) {
+    private fun initializeData() {
+        val storageFile = File(context.filesDir, dataFileName)
+        if (!storageFile.exists()) {
+            taskFlow.value = emptyList()
+            return
+        }
             try {
-                val jsonString = file.readText()
-                val type = object : TypeToken<List<Task>>() {}.type
-                _tasks.value = gson.fromJson(jsonString, type) ?: emptyList()
+                val jsonContent = storageFile.readText()
+                val listType = object : TypeToken<List<Task>>() {}.type
+
+                val loadedList : List<Task>? = jsonParser.fromJson(jsonContent, listType)
+                taskFlow.value = loadedList ?: emptyList()
             } catch (e: Exception) {
-                _tasks.value = emptyList()
+                e.printStackTrace()
+                taskFlow.value = emptyList()
             }
-        }
+
     }
 
-    private suspend fun saveTasks() {
+    private suspend fun persistData(tasks: List<Task>) {
         withContext(Dispatchers.IO) {
-            val jsonString = gson.toJson(_tasks.value)
-            context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
-                it.write(jsonString.toByteArray())
+            try{
+                val jsonString = jsonParser.toJson(tasks)
+                File(context.filesDir, dataFileName).writeText(jsonString)
             }
+            catch (e: Exception){
+                e.printStackTrace()
+            }
+
+
+
+
         }
     }
 
-    override fun getTasks(): Flow<List<Task>> = _tasks.asStateFlow()
+    override fun getTasks(): Flow<List<Task>> = taskFlow.asStateFlow()
 
     override suspend fun addTask(task: Task) {
-        val current = _tasks.value.toMutableList()
-        current.add(task)
-        _tasks.value = current
-        saveTasks()
+        val updatedList = taskFlow.value + task
+       updatedLocalState(updatedList)
     }
 
     override suspend fun updateTask(task: Task) {
-        val current = _tasks.value.toMutableList()
-        val index = current.indexOfFirst { it.id == task.id }
-        if (index != -1) {
-            current[index] = task
-            _tasks.value = current
-            saveTasks()
+        val updatedList = taskFlow.value.map { currentTask ->
+            if (currentTask.taskId == task.taskId) task else currentTask
         }
+        updatedLocalState(updatedList)
     }
 
+
+
     override suspend fun deleteTask(task: Task) {
-        val current = _tasks.value.toMutableList()
-        current.remove(task)
-        _tasks.value = current
-        saveTasks()
+        val updatedList = taskFlow.value.filter {
+            it.taskId != task.taskId
+        }
+        updatedLocalState(updatedList)
+    }
+    private suspend fun updatedLocalState(newList: List<Task>){
+        taskFlow.value = newList
+        persistData(newList)
     }
 }

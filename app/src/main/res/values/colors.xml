@@ -4,4 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue_primary">#0056b3</color>
 
-    <color name="app_background">#F5F5F5</color> <color name="card_background">#FFFFFF</color> <color name="text_primary">#000000</color>   <color name="text_secondary">#808080</color> <color name="button_tint">#FFFFFF</color>     <color name="button_text">#000000</color>     </resources>
+    <color name="app_background">#F5F5F5</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#808080</color>
+    <color name="button_tint">#FFFFFF</color>
+    <color name="button_text">#000000</color>
+
+</resources>

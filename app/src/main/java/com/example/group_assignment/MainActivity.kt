@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
     private fun showDeleteDialog(task: Task) {
         AlertDialog.Builder(this)
             .setTitle("Delete Task?")
-            .setMessage("Are you sure you want to delete '${task.title}'?")
+            .setMessage("Are you sure you want to delete '${task.taskTitle}'?")
             .setPositiveButton("Yes") { _, _ -> viewModel.deleteTask(task) }
             .setNegativeButton("No", null)
             .show()
