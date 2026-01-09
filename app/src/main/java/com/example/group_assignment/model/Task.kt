@@ -7,5 +7,6 @@ data class Task(
     var taskTitle: String,
     var taskDueDate: String,
     var isTaskCompleted: Boolean = false
+
 )
 
