@@ -91,10 +91,6 @@ class TaskViewModel(private val repository: FileTaskRepository) : ViewModel() {
     }
 }
 
-// ---------------------------------------------------------
-// INI KILANG (FACTORY) YANG HILANG TU!
-// Letak kat luar class TaskViewModel (paling bawah file)
-// ---------------------------------------------------------
 class TaskViewModelFactory(private val repository: FileTaskRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
