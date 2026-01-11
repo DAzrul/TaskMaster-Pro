@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- UI layout reviewed and adapted by Nazhan (Role D: UI Adapter) -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -71,6 +72,7 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
+        android:contentDescription="Add new task"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_input_add"
         android:backgroundTint="@color/blue_primary"
