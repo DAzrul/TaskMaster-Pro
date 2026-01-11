@@ -1,3 +1,4 @@
+// Settings logic initialized
 package com.example.group_assignment
 
 import android.content.ContentValues
