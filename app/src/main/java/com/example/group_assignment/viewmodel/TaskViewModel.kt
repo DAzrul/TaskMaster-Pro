@@ -10,19 +10,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+/**
+ * Enhanced Task ViewModel with Category Support
+ * Role B: Main Task List UI, Task Data Class, Internal Storage Repository
+ *
+ * Improvements:
+ * - Enhanced addTask method to support category
+ * - Maintains sorting functionality
+ * - Better state management
+ */
 class TaskViewModel(private val repository: ITaskRepository) : ViewModel() {
 
-    // Kita guna MutableStateFlow untuk pegang cara sorting (Default: Date)
     private val _sortOrder = MutableStateFlow(SortType.DATE)
-
-    // UI akan observe _tasks yang dah siap disusun
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     val tasks: StateFlow<List<Task>> = _tasks
 
     init {
         viewModelScope.launch {
-            // Gabungkan data dari Repository + SortOrder
-            // Bila salah satu berubah, dia akan run logic sort ni balik
             combine(repository.getTasks(), _sortOrder) { tasks, sortOrder ->
                 when (sortOrder) {
                     SortType.TITLE -> tasks.sortedBy { it.title.lowercase() }
@@ -34,30 +38,66 @@ class TaskViewModel(private val repository: ITaskRepository) : ViewModel() {
         }
     }
 
-    // Fungsi untuk UI panggil bila user pilih menu
+    /**
+     * Update sorting order
+     */
     fun updateSortOrder(sortType: SortType) {
         _sortOrder.value = sortType
     }
 
-    // Fungsi CRUD biasa
+    /**
+     * Add a new task (legacy method for backward compatibility)
+     */
     fun addTask(title: String, date: String) {
-        viewModelScope.launch { repository.addTask(Task(title = title, dueDate = date)) }
+        viewModelScope.launch {
+            repository.addTask(Task(title = title, dueDate = date))
+        }
     }
 
+    /**
+     * Add a new task with category (enhanced method)
+     */
+    fun addTask(
+        title: String,
+        date: String,
+        category: String = "General"
+    ) {
+        viewModelScope.launch {
+            repository.addTask(
+                Task(
+                    title = title,
+                    dueDate = date,
+                    category = category
+                )
+            )
+        }
+    }
+
+    /**
+     * Update an existing task
+     */
     fun updateTask(task: Task) {
         viewModelScope.launch { repository.updateTask(task) }
     }
 
+    /**
+     * Delete a task
+     */
     fun deleteTask(task: Task) {
         viewModelScope.launch { repository.deleteTask(task) }
     }
 }
 
-// Enum untuk jenis sorting (Senang nak manage)
+/**
+ * Enum for sorting types
+ */
 enum class SortType {
     TITLE, DATE
 }
 
+/**
+ * Factory for creating TaskViewModel with dependency injection
+ */
 class TaskViewModelFactory(private val repository: ITaskRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
