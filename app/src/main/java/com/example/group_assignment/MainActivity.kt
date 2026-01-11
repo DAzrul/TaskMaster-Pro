@@ -17,6 +17,7 @@ import com.example.group_assignment.model.Task
 import com.example.group_assignment.repository.FileTaskRepository
 import com.example.group_assignment.repository.SettingsRepository
 import com.example.group_assignment.ui.TaskAdapter
+import com.example.group_assignment.viewmodel.SortType
 import com.example.group_assignment.viewmodel.TaskViewModel
 import com.example.group_assignment.viewmodel.TaskViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         val factory = TaskViewModelFactory(taskRepo)
         viewModel = ViewModelProvider(this, factory)[TaskViewModel::class.java]
 
-        // 2. Setup Dark Mode (Wajib observe kat sini gak)
+        // 2. Setup Dark Mode
         settingsRepo = SettingsRepository(this)
         lifecycleScope.launch {
             settingsRepo.isDarkMode.collect { isDark ->
@@ -55,10 +56,23 @@ class MainActivity : AppCompatActivity() {
         )
         recyclerView.adapter = adapter
 
-        // 4. Observe Data changes
+        // 4. Observe Data & Events (This is the reactive part)
         lifecycleScope.launch {
-            viewModel.tasks.collect { tasks ->
-                adapter.updateData(tasks)
+            // Observe Task List
+            launch {
+                viewModel.tasks.collect { tasks ->
+                    adapter.updateData(tasks)
+                }
+            }
+
+            // Observe UI Messages (Validation Errors / Success)
+            launch {
+                viewModel.uiMessage.collect { message ->
+                    message?.let {
+                        Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
+                        viewModel.clearMessage() // Clear state so toast doesn't reappear on rotate
+                    }
+                }
             }
         }
 
@@ -67,16 +81,15 @@ class MainActivity : AppCompatActivity() {
             showAddTaskDialog()
         }
 
-        // 6. Settings Button Logic (Crash Fix Checked)
+        // 6. Settings Button
         findViewById<Button>(R.id.btnSettings).setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
 
-        // BUTTON: SORT (Sekarang berfungsi!)
+        // 7. Sort Button
         val btnSort = findViewById<Button>(R.id.btnSort)
         btnSort.setOnClickListener { view ->
-            // Buat menu pop-up
             val popup = android.widget.PopupMenu(this, view)
             popup.menu.add("Sort by Date")
             popup.menu.add("Sort by Title")
@@ -84,11 +97,11 @@ class MainActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.title) {
                     "Sort by Date" -> {
-                        viewModel.updateSortOrder(com.example.group_assignment.viewmodel.SortType.DATE)
-                        btnSort.text = "Sort: Date ▼" // Tukar text butang biar user nampak
+                        viewModel.updateSortOrder(SortType.DATE)
+                        btnSort.text = "Sort: Date ▼"
                     }
                     "Sort by Title" -> {
-                        viewModel.updateSortOrder(com.example.group_assignment.viewmodel.SortType.TITLE)
+                        viewModel.updateSortOrder(SortType.TITLE)
                         btnSort.text = "Sort: Title ▼"
                     }
                 }
@@ -103,12 +116,10 @@ class MainActivity : AppCompatActivity() {
         layout.orientation = LinearLayout.VERTICAL
         layout.setPadding(50, 40, 50, 10)
 
-        // Input Tajuk
         val inputTitle = EditText(this)
         inputTitle.hint = "Task Title (e.g. Buy Groceries)"
         layout.addView(inputTitle)
 
-        // Input Tarikh (KITA LOCK)
         val inputDate = EditText(this)
         inputDate.hint = "Select Due Date"
         inputDate.isFocusable = false
@@ -123,16 +134,11 @@ class MainActivity : AppCompatActivity() {
             val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
 
             val datePicker = android.app.DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-                // Format standard YYYY-MM-DD
                 val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
                 inputDate.setText(formattedDate)
             }, year, month, day)
 
-            // INI KOD PENYELAMAT MASA SILAM:
-            // Set tarikh paling awal ialah "Sekarang" tolak 1 saat.
-            // Jadi user cuma boleh pilih HARI INI dan MASA DEPAN sahaja.
             datePicker.datePicker.minDate = System.currentTimeMillis() - 1000
-
             datePicker.show()
         }
 
@@ -143,11 +149,9 @@ class MainActivity : AppCompatActivity() {
                 val title = inputTitle.text.toString().trim()
                 val date = inputDate.text.toString().trim()
 
-                if (title.isNotEmpty() && date.isNotEmpty()) {
-                    viewModel.addTask(title, date)
-                } else {
-                    Toast.makeText(this, "Please fill in both fields!", Toast.LENGTH_SHORT).show()
-                }
+                // CHANGED: No if/else check here. The Activity blindly passes data.
+                // The ViewModel will reject it if it's empty.
+                viewModel.addTask(title, date)
             }
             .setNegativeButton("Cancel", null)
             .show()
